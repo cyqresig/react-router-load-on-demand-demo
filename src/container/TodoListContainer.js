@@ -5,7 +5,7 @@
 
 import './TodoListContainer.pcss'
 import React, { Component, } from 'react'
-import Todo from '../component/Todo'
+// import Todo from '../component/Todo'
 import action from '../action'
 // import { bindActionCreators, } from 'redux'
 import { connect, } from 'react-redux'
@@ -31,7 +31,19 @@ class TodoListContainer extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            TodoClass: null,
+        }
+    }
+
+    componentWillMount() {
+        require.ensure([], (require) => {
+            const TodoClass = require('../component/Todo').default
+
+            this.setState({     // eslint-disable-line
+                TodoClass,
+            })
+        })
     }
 
     componentDidMount() {
@@ -62,10 +74,12 @@ class TodoListContainer extends Component {
 
         console.log(`todos.length = `, todos.length)    // eslint-disable-line
 
+        /* eslint-disable */
         return (
             <div className="todo-list">
                 {
-                    todos.map((todo) => {
+                    this.state.TodoClass === null
+                        ? null : todos.map((todo) => {
                         const {
                             id,
                             complete,
@@ -73,7 +87,7 @@ class TodoListContainer extends Component {
                         } = todo
 
                         return (
-                            <Todo
+                            <this.state.TodoClass
                                 key={id}
                                 // key={index}
                                 id={id}
@@ -88,6 +102,7 @@ class TodoListContainer extends Component {
                 <input type="button" className="button" onClick={this.handleAddTodoClick} value="新增任务"/>
             </div>
         )
+        /* eslint-disable */
     }
 }
 
